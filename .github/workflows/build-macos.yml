@@ -10,6 +10,7 @@ on:
 env:
   BUILD_DIR: ../ThreeDICOM-sb
   CMAKE_GENERATOR: Ninja
+  HOMEBREW_NO_AUTO_UPDATE: "1"
 
 jobs:
   build-macos:
@@ -27,7 +28,12 @@ jobs:
           echo "export CC=\"ccache clang\"" >> $GITHUB_ENV
           echo "export CXX=\"ccache clang++\"" >> $GITHUB_ENV
 
-      - name: Show disk usage after dependency install
+      - name: Free additional disk space
+        run: |
+          sudo rm -rf /Applications/Xcode.app
+          rm -rf "$HOME"/Library/Caches/Homebrew
+
+      - name: Show disk usage
         run: df -h
 
       - name: Configure SuperBuild
@@ -41,13 +47,10 @@ jobs:
             -DOPENSSL_ROOT_DIR=$(brew --prefix openssl) \
             -DSlicer_USE_SYSTEM_LibFFI=ON \
             -DSlicer_VTK_SMP_IMPLEMENTATION_TYPE=Sequential \
+            -DSlicer_BUILD_SimpleITK=OFF \
+            -DSlicer_BUILD_ITKPython=OFF \
+            -DSlicer_BUILD_TESTING=OFF \
             -DCMAKE_OSX_DEPLOYMENT_TARGET=13.0
-
-      - name: Build VTK
-        run: cmake --build "$BUILD_DIR" --target VTK -- -j4
-
-      - name: Build SimpleITK
-        run: cmake --build "$BUILD_DIR" --target SimpleITK -- -j2
 
       - name: Build ThreeDICOMApp
         run: cmake --build "$BUILD_DIR" --target Slicer -- -j4
@@ -58,7 +61,8 @@ jobs:
       - name: Collect artifacts
         run: |
           mkdir -p artifacts
-          cp "$BUILD_DIR"/Slicer-build/*.dmg artifacts/
+          ls -l "$BUILD_DIR"/Slicer-build
+          find "$BUILD_DIR"/Slicer-build -name '*.dmg' -maxdepth 1 -exec cp {} artifacts/ \;
           tar -C "$BUILD_DIR"/Slicer-build -czf artifacts/ThreeDICOMApp-build-tree.tgz .
 
       - name: Upload artifacts

@@ -38,10 +38,10 @@ Steps:
 
 1. Ensure the repository is hosted on GitHub (public or private). No additional secrets are required.
 2. Open the **Actions** tab and trigger **Build ThreeDICOM (macOS)** via `Run workflow`.
-3. Wait for the job (3–5 hours depending on queue load). The workflow builds dependencies (Qt, ITK, SimpleITK, VTK) and packages `ThreeDICOMApp`.
+3. Wait for the job (2–3 hours depending on queue load). The workflow builds the SuperBuild (Qt, VTK, ITK without SimpleITK) and packages `ThreeDICOMApp`.
 4. Download the artifact named `ThreeDICOMApp-macos`—it contains both the `.dmg` installer and a tarball of the build tree for further inspection.
 
 Tips:
 
-- macOS runners provide ~58 GB of writable space under the workspace, which is sufficient for the SuperBuild configured above.
-- If you do not need SimpleITK you can set `-DSlicer_BUILD_SimpleITK=OFF` in the configure step to shorten build time and reduce disk consumption.
+- macOS runners provide ~58 GB のワークスペースしかありません。Workflow では事前に Xcode を削除し、SimpleITK/ITK Python を無効化してこの制限内に収めています。
+- SimpleITK が必要な構成に切り替える場合は `Configure SuperBuild` ステップの CMake オプションを手動で編集し、十分なディスク容量を持つ実行環境でビルドしてください。
