@@ -45,7 +45,7 @@ jobs:
             -DQt5_DIR=$(brew --prefix qt@5)/lib/cmake/Qt5 \
             -DSlicer_USE_SYSTEM_OpenSSL=ON \
             -DOPENSSL_ROOT_DIR=$(brew --prefix openssl) \
-            -DSlicer_USE_SYSTEM_LibFFI=ON \
+            -DSlicer_USE_SYSTEM_LibFFI=OFF \
             -DSlicer_VTK_SMP_IMPLEMENTATION_TYPE=Sequential \
             -DSlicer_BUILD_SimpleITK=OFF \
             -DSlicer_BUILD_ITKPython=OFF \
