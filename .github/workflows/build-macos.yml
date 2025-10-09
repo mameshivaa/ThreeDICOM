@@ -1,0 +1,69 @@
+name: Build ThreeDICOM (macOS)
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - main
+      - ci/*
+
+env:
+  BUILD_DIR: ../ThreeDICOM-sb
+  CMAKE_GENERATOR: Ninja
+
+jobs:
+  build-macos:
+    runs-on: macos-13
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Install build dependencies
+        run: |
+          brew install cmake ninja qt@5 libffi openssl ccache
+          echo "export PATH=\"$(brew --prefix qt@5)/bin:$PATH\"" >> $GITHUB_ENV
+          echo "export CCACHE_DIR=\"$HOME/.ccache\"" >> $GITHUB_ENV
+          echo "export CC=\"ccache clang\"" >> $GITHUB_ENV
+          echo "export CXX=\"ccache clang++\"" >> $GITHUB_ENV
+
+      - name: Show disk usage after dependency install
+        run: df -h
+
+      - name: Configure SuperBuild
+        run: |
+          cmake -S . -B "$BUILD_DIR" \
+            -G "$CMAKE_GENERATOR" \
+            -C ThreeDICOMApp.cmake \
+            -DSlicer_MAIN_PROJECT=ThreeDICOMApp \
+            -DQt5_DIR=$(brew --prefix qt@5)/lib/cmake/Qt5 \
+            -DSlicer_USE_SYSTEM_OpenSSL=ON \
+            -DOPENSSL_ROOT_DIR=$(brew --prefix openssl) \
+            -DSlicer_USE_SYSTEM_LibFFI=ON \
+            -DSlicer_VTK_SMP_IMPLEMENTATION_TYPE=Sequential \
+            -DCMAKE_OSX_DEPLOYMENT_TARGET=13.0
+
+      - name: Build VTK
+        run: cmake --build "$BUILD_DIR" --target VTK -- -j4
+
+      - name: Build SimpleITK
+        run: cmake --build "$BUILD_DIR" --target SimpleITK -- -j2
+
+      - name: Build ThreeDICOMApp
+        run: cmake --build "$BUILD_DIR" --target Slicer -- -j4
+
+      - name: Package ThreeDICOMApp
+        run: cmake --build "$BUILD_DIR" --target package
+
+      - name: Collect artifacts
+        run: |
+          mkdir -p artifacts
+          cp "$BUILD_DIR"/Slicer-build/*.dmg artifacts/
+          tar -C "$BUILD_DIR"/Slicer-build -czf artifacts/ThreeDICOMApp-build-tree.tgz .
+
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: ThreeDICOMApp-macos
+          path: artifacts
+          if-no-files-found: error
