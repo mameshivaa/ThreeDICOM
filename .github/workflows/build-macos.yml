@@ -22,7 +22,7 @@ jobs:
 
       - name: Install build dependencies
         run: |
-          brew install cmake ninja qt@5 libffi openssl ccache
+          brew install cmake ninja qt@5 openssl ccache
           echo "export PATH=\"$(brew --prefix qt@5)/bin:$PATH\"" >> $GITHUB_ENV
           echo "export CCACHE_DIR=\"$HOME/.ccache\"" >> $GITHUB_ENV
           echo "export CC=\"ccache clang\"" >> $GITHUB_ENV
@@ -38,7 +38,7 @@ jobs:
 
       - name: Configure SuperBuild
         run: |
-          cmake -S . -B "$BUILD_DIR" \
+          cmake -U"*LibFFI*" -S . -B "$BUILD_DIR" \
             -G "$CMAKE_GENERATOR" \
             -C ThreeDICOMApp.cmake \
             -DSlicer_MAIN_PROJECT=ThreeDICOMApp \
