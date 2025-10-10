@@ -30,8 +30,9 @@ jobs:
 
       - name: Free additional disk space
         run: |
-          sudo rm -rf /Applications/Xcode.app
           rm -rf "$HOME"/Library/Caches/Homebrew
+          rm -rf "$HOME"/Library/Developer/Xcode/DerivedData
+          sudo rm -rf /Library/Developer/CoreSimulator/Caches
 
       - name: Show disk usage
         run: df -h

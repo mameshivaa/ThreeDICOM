@@ -43,5 +43,5 @@ Steps:
 
 Tips:
 
-- macOS runners provide ~58 GB のワークスペースしかありません。Workflow では事前に Xcode を削除し、SimpleITK/ITK Python を無効化し、libffi も SuperBuild に任せてこの制限内に収めています。
+- macOS runners provide ~58 GB のワークスペースしかありません。Workflow では Homebrew や Xcode のキャッシュを削除し、SimpleITK/ITK Python を無効化し、libffi も SuperBuild に任せてこの制限内に収めています。
 - SimpleITK が必要な構成に切り替える場合は `Configure SuperBuild` ステップの CMake オプションを手動で編集し、十分なディスク容量を持つ実行環境でビルドしてください。
