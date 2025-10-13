@@ -44,7 +44,7 @@ set(ENV{YFLAGS} \"${BISON_FLAGS}\")
 "include(\"${_env_script}\")
 set(${proj}_WORKING_DIR \"${EP_BINARY_DIR}\")
 ExternalProject_Execute(${proj} \"configure\" sh ${EP_SOURCE_DIR}/configure
-    --prefix=${EP_INSTALL_DIR} --disable-shared)
+    --prefix=${EP_INSTALL_DIR} --disable-shared --disable-memfd)
 ")
 
   set(_version "10.44")
