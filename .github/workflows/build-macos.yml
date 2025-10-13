@@ -39,6 +39,8 @@ jobs:
 
       - name: Configure SuperBuild
         run: |
+          SDK_PATH=$(xcrun --sdk macosx --show-sdk-path)
+          echo "SDKROOT=$SDK_PATH" >> "$GITHUB_ENV"
           cmake -U"*LibFFI*" -S . -B "$BUILD_DIR" \
             -G "$CMAKE_GENERATOR" \
             -C ThreeDICOMApp.cmake \
@@ -51,10 +53,81 @@ jobs:
             -DSlicer_BUILD_SimpleITK=OFF \
             -DSlicer_BUILD_ITKPython=OFF \
             -DSlicer_BUILD_TESTING=OFF \
-            -DCMAKE_OSX_DEPLOYMENT_TARGET=13.0
+            -DCMAKE_OSX_DEPLOYMENT_TARGET=13.0 \
+            -DCMAKE_OSX_SYSROOT="$SDK_PATH"
 
       - name: Build ThreeDICOMApp
         run: cmake --build "$BUILD_DIR" --target Slicer -- -j4
+
+      - name: Collect failure diagnostics
+        if: failure()
+        run: |
+          set -euo pipefail
+          BUILD_DIR_ABS="$(cd "$BUILD_DIR" && pwd)"
+          REPORT_DIR="$GITHUB_WORKSPACE/failure-diagnostics"
+          mkdir -p "$REPORT_DIR"
+
+          {
+            echo "# System"
+            date || true
+            uname -a || true
+            sw_vers || true
+            echo
+            echo "# Xcode"
+            xcode-select --print-path || true
+            xcodebuild -version || true
+            xcrun --sdk macosx --show-sdk-path || true
+            echo
+            echo "# Toolchain"
+            clang --version || true
+            cc --version || true
+            echo
+            echo "# Environment"
+            env | sort
+          } > "$REPORT_DIR/system-info.txt"
+
+          # Copy key build logs if they exist
+          for target in \
+            "$BUILD_DIR_ABS/PCRE2-build/config.log" \
+            "$BUILD_DIR_ABS/PCRE2_configure_step_output.txt" \
+            "$BUILD_DIR_ABS/PCRE2_configure_step_error.txt" \
+            "$BUILD_DIR_ABS/CMakeFiles/CMakeOutput.log" \
+            "$BUILD_DIR_ABS/CMakeFiles/CMakeError.log" \
+            "$BUILD_DIR_ABS/Slicer-build/CMakeFiles/CMakeOutput.log" \
+            "$BUILD_DIR_ABS/Slicer-build/CMakeFiles/CMakeError.log" \
+            "$BUILD_DIR_ABS/Slicer-build/PCRE2-prefix/src/PCRE2-stamp/PCRE2-configure-*.log"
+          do
+            for file in $target; do
+              if [ -f "$file" ]; then
+                rel="${file#"$BUILD_DIR_ABS/"}"
+                dest="$REPORT_DIR/$rel"
+                mkdir -p "$(dirname "$dest")"
+                cp "$file" "$dest"
+              fi
+            done
+          done
+
+          # Summaries for quick scan in the job log
+          {
+            echo "# PCRE2 config.log (tail)"
+            [ -f "$BUILD_DIR_ABS/PCRE2-build/config.log" ] && tail -n 200 "$BUILD_DIR_ABS/PCRE2-build/config.log"
+            echo
+            echo "# PCRE2 configure stdout (tail)"
+            [ -f "$BUILD_DIR_ABS/PCRE2_configure_step_output.txt" ] && tail -n 200 "$BUILD_DIR_ABS/PCRE2_configure_step_output.txt"
+            echo
+            echo "# PCRE2 configure stderr (tail)"
+            [ -f "$BUILD_DIR_ABS/PCRE2_configure_step_error.txt" ] && tail -n 200 "$BUILD_DIR_ABS/PCRE2_configure_step_error.txt"
+          } >> "$REPORT_DIR/system-info.txt"
+
+          echo "--- failure-diagnostics/system-info.txt ---"
+          cat "$REPORT_DIR/system-info.txt"
+
+      - name: Upload failure diagnostics
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: failure-diagnostics
+          path: failure-diagnostics
 
       - name: Package ThreeDICOMApp
         run: cmake --build "$BUILD_DIR" --target package
