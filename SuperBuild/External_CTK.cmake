@@ -142,6 +142,21 @@ if(NOT DEFINED CTK_DIR AND NOT Slicer_USE_SYSTEM_${proj})
         DEPENDEES build
         )
     endif()
+
+    set(_pythonqt_disable_dtls_patch
+      ${CMAKE_CURRENT_LIST_DIR}/patches/PythonQt/disable-dtls.patch)
+    if(NOT WIN32 AND EXISTS ${_pythonqt_disable_dtls_patch})
+      ExternalProject_Add_Step(${proj} patch_pythonqt_disable_dtls
+        COMMAND
+          ${CMAKE_COMMAND}
+            -Dpatch:FILEPATH=${_pythonqt_disable_dtls_patch}
+            -Dsource:PATH=${EP_BINARY_DIR}/PythonQt
+            -P ${CMAKE_CURRENT_LIST_DIR}/ApplyPatch.cmake
+        DEPENDEES configure
+        DEPENDERS build
+        COMMENT "Apply PythonQt DTLS guard patch"
+        )
+    endif()
   endif()
 
   ExternalProject_GenerateProjectDescription_Step(${proj})

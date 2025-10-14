@@ -1,0 +1,45 @@
+--- a/generator/typesystem_network.xml
++++ b/generator/typesystem_network.xml
+@@ -191,7 +191,12 @@
+         <include file-name="QDateTime" location="global"/>
+     </extra-includes>
+   </value-type>
+-  <value-type name="QSslConfiguration"/>
++  <value-type name="QSslConfiguration">
++    <modify-function signature="defaultDtlsConfiguration()" remove="all"/>
++    <modify-function signature="setDefaultDtlsConfiguration(const QSslConfiguration&)" remove="all"/>
++    <modify-function signature="dtlsCookieVerificationEnabled() const" remove="all"/>
++    <modify-function signature="setDtlsCookieVerificationEnabled(bool)" remove="all"/>
++  </value-type>
+   <value-type name="QSslDiffieHellmanParameters" since-version="5.8"/>
+   <enum-type name="QSslDiffieHellmanParameters::Error" since-version="5.8"/>
+ 
+@@ -221,7 +226,6 @@
+   <object-type name="QDnsLookup"/>
+   <enum-type name="QDnsLookup::Error"/>
+   <enum-type name="QDnsLookup::Type"/>
+-  <enum-type name="QDtlsError"/>
+   <object-type name="QDnsMailExchangeRecord"/>
+   <object-type name="QDnsServiceRecord"/>
+   <object-type name="QDnsTextRecord"/>
+@@ -242,10 +246,17 @@
+   <enum-type name="QHstsPolicy::PolicyFlag"/>
+   <object-type name="QNetworkDatagram"/>
+   
++  <inject-code class="pywrap-h">
++#if QT_CONFIG(dtls)
++  </inject-code>
++  <enum-type name="QDtlsError"/>
+   <object-type name="QDtls" since-version="5.12"/>
+   <enum-type name="QDtls::HandshakeState" since-version="5.12"/>
+   <object-type name="QDtlsClientVerifier" since-version="5.12"/>
+   <value-type name="QDtlsClientVerifier::GeneratorParameters" since-version="5.12"/>
++  <inject-code class="pywrap-h">
++#endif
++  </inject-code>
+   
+   <object-type name="QHttp1Configuration" since-version="6.5"/>
+   <rejection class="QHttp1Configuration::ShortData" since-version="6.5"/>
+   <rejection class="QHttp1Configuration::U" since-version="6.5"/>
+   <object-type name="QHttp2Configuration" since-version="5.14"/>
+
