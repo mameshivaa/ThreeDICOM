@@ -16,6 +16,22 @@ if(NOT EXISTS "${source}")
   message(FATAL_ERROR "Source directory not found: ${source}")
 endif()
 
+get_filename_component(_source_name "${source}" NAME)
+set(_download_script "${source}-cmake/tmp/${_source_name}-gitclone.cmake")
+if(EXISTS "${_download_script}")
+  message(STATUS "Ensuring source ${_source_name} is cloned before patching")
+  execute_process(
+    COMMAND ${CMAKE_COMMAND} -DCMAKE_MESSAGE_LOG_LEVEL=VERBOSE -P "${_download_script}"
+    WORKING_DIRECTORY "${source}"
+    RESULT_VARIABLE _dl_res
+    OUTPUT_VARIABLE _dl_out
+    ERROR_VARIABLE _dl_err
+  )
+  if(NOT _dl_res EQUAL 0)
+    message(FATAL_ERROR "Failed to prepare source using ${_download_script}:\n${_dl_out}\n${_dl_err}")
+  endif()
+endif()
+
 message(STATUS "Applying patch ${patch} in ${source}")
 execute_process(
   COMMAND ${PATCH_COMMAND} -p1 -N -i "${patch}"
