@@ -46,3 +46,11 @@ ThreeDICOM is a customized distribution of 3D Slicer that focuses on efficient r
 4. Export results via the DICOM exporter, scene packages, or by saving individual models/label maps.
 
 For deeper module-specific information, continue with the rest of the user guide or the developer documentation under Docs/developer_guide.
+
+## Development opportunities
+
+- Automate repetitive segmentation and measurement workflows by packaging scripted pipelines as Python Qt modules or command line interfaces.
+- Connect markups and segment statistics to institutional reporting systems (structured DICOM SR, HL7, or CSV exports) for streamlined quantitative reporting.
+- Integrate AI-assisted tools (for example, MONAI Label or TotalSegmentator) to pre-compute candidate segmentations that operators can refine.
+- Explore synchronized collaboration by persisting MRML scenes to shared storage so multiple reviewers can annotate a case concurrently.
+- Curate a controlled catalog of vetted extensions to distribute domain-specific functionality without modifying the base installation.
