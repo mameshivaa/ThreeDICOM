@@ -6,6 +6,7 @@ For older Slicer documentation (4.10 and earlier), refer to the [3D Slicer wiki]
 :maxdepth: 2
 
 user_guide/about
+user_guide/threedicom_app_overview
 user_guide/getting_started
 user_guide/get_help
 
