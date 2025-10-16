@@ -38,21 +38,25 @@ if(CMAKE_HOST_WIN32)
     )
 endif()
 
-# First search the PATH
-find_program(Patch_EXECUTABLE
-  NAME patch
-  PATHS ${_patch_path}
-  DOC ${_doc}
-  )
-
-if(CMAKE_HOST_WIN32)
-  # Now look for installations in Git/ directories under typical installation
-  # prefixes on Windows.
+# Only run the search if the caller did not predefine a valid executable.
+message(STATUS "FindPatch: preset Patch_EXECUTABLE='${Patch_EXECUTABLE}'")
+if(NOT Patch_EXECUTABLE OR NOT EXISTS "${Patch_EXECUTABLE}")
+  # First search the PATH
   find_program(Patch_EXECUTABLE
-    NAMES patch
-    PATH_SUFFIXES Git/usr/bin Git/bin GnuWin32/bin
+    NAME patch
+    PATHS ${_patch_path}
     DOC ${_doc}
     )
+
+  if(CMAKE_HOST_WIN32)
+    # Now look for installations in Git/ directories under typical installation
+    # prefixes on Windows.
+    find_program(Patch_EXECUTABLE
+      NAMES patch
+      PATH_SUFFIXES Git/usr/bin Git/bin GnuWin32/bin
+      DOC ${_doc}
+      )
+  endif()
 endif()
 
 if(Patch_EXECUTABLE AND NOT TARGET Patch::patch)

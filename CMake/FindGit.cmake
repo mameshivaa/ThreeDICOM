@@ -77,11 +77,13 @@ if(WIN32)
   endif()
 endif()
 
-find_program(GIT_EXECUTABLE ${git_names}
-  PATHS
-    "C:/Program Files/Git/bin"
-    "C:/Program Files (x86)/Git/bin"
-  DOC "git command line client")
+if(NOT GIT_EXECUTABLE OR NOT EXISTS "${GIT_EXECUTABLE}")
+  find_program(GIT_EXECUTABLE ${git_names}
+    PATHS
+      "C:/Program Files/Git/bin"
+      "C:/Program Files (x86)/Git/bin"
+    DOC "git command line client")
+endif()
 mark_as_advanced(GIT_EXECUTABLE)
 
 if(GIT_EXECUTABLE)

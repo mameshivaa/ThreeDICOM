@@ -22,7 +22,7 @@
 #define __qSlicerAppMainWindow_h
 
 // Slicer includes
-#include "qSlicerAppExport.h"
+#include "qThreeDICOMAppExport.h"
 #include "qSlicerMainWindow.h"
 
 class qSlicerAppMainWindowPrivate;
