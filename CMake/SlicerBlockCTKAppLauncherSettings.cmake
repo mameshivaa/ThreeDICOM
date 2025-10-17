@@ -41,6 +41,61 @@
 #   SLICER_ADDITIONAL_PATH_ENVVARS_INSTALLED
 #
 
+#----------------------------------------------------------------------------
+# Helpers to normalize paths stored in launcher settings.
+#----------------------------------------------------------------------------
+
+macro(_slicer_launcher_replace_path value_var)
+  set(_current "${${value_var}}")
+  if(Slicer_BINARY_DIR AND NOT "${Slicer_BINARY_DIR}" STREQUAL "")
+    string(FIND "${_current}" "${Slicer_BINARY_DIR}" _idx_binary)
+    if(_idx_binary EQUAL 0)
+      string(REPLACE "${Slicer_BINARY_DIR}" "<APPLAUNCHER_SETTINGS_DIR>" _current "${_current}")
+    elseif(DEFINED Slicer_SUPERBUILD_DIR AND NOT "${Slicer_SUPERBUILD_DIR}" STREQUAL "")
+      string(FIND "${_current}" "${Slicer_SUPERBUILD_DIR}" _idx_superbuild)
+      if(_idx_superbuild EQUAL 0)
+        string(REPLACE "${Slicer_SUPERBUILD_DIR}" "<APPLAUNCHER_SETTINGS_DIR>/.." _current "${_current}")
+      endif()
+    endif()
+  endif()
+  set(${value_var} "${_current}")
+endmacro()
+
+function(_slicer_launcher_make_relative listVar)
+  if(NOT DEFINED ${listVar})
+    return()
+  endif()
+  set(_result "")
+  foreach(_item IN LISTS ${listVar})
+    set(_value "${_item}")
+    _slicer_launcher_replace_path(_value)
+    list(APPEND _result "${_value}")
+  endforeach()
+  set(${listVar} "${_result}" PARENT_SCOPE)
+endfunction()
+
+function(_slicer_launcher_make_relative_env listVar)
+  if(NOT DEFINED ${listVar})
+    return()
+  endif()
+  set(_result "")
+  foreach(_item IN LISTS ${listVar})
+    set(_value "${_item}")
+    string(FIND "${_value}" "=" _eq_pos)
+    if(_eq_pos GREATER -1)
+      string(SUBSTRING "${_value}" 0 ${_eq_pos} _env_key)
+      math(EXPR _value_start "${_eq_pos} + 1")
+      string(LENGTH "${_value}" _env_length)
+      math(EXPR _value_length "${_env_length} - ${_value_start}")
+      string(SUBSTRING "${_value}" ${_value_start} ${_value_length} _env_value)
+      _slicer_launcher_replace_path(_env_value)
+      set(_value "${_env_key}=${_env_value}")
+    endif()
+    list(APPEND _result "${_value}")
+  endforeach()
+  set(${listVar} "${_result}" PARENT_SCOPE)
+endfunction()
+
 #
 # Usually, if you are building on a system handling multiple build configurations
 # (i.e Visual studio with Debug, Release, ...), the libraries and executables could be built in a
@@ -210,6 +265,12 @@ if(Slicer_USE_PYTHONQT)
     )
 
 endif()
+
+_slicer_launcher_make_relative(SLICER_LIBRARY_PATHS_BUILD)
+_slicer_launcher_make_relative(SLICER_PATHS_BUILD)
+_slicer_launcher_make_relative(SLICER_QT_PLUGIN_PATH_BUILD)
+_slicer_launcher_make_relative(SLICER_PYTHONPATH_BUILD)
+_slicer_launcher_make_relative_env(SLICER_ENVVARS_BUILD)
 
 
 #-----------------------------------------------------------------------------
