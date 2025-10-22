@@ -1,4 +1,4 @@
-<!DOCTYPE RCC><RCC version="1.0">
+﻿<!DOCTYPE RCC><RCC version="1.0">
   <qresource>
     <file alias="Icons/Small/DesktopIcon.png">Icons/Small/ThreeDICOM-DesktopIcon.png</file>
     <file alias="Icons/Medium/DesktopIcon.png">Icons/Medium/ThreeDICOM-DesktopIcon.png</file>
@@ -9,5 +9,7 @@
     <file alias="Logo.png">Images/ThreeDICOM-Logo.png</file>
     <file alias="ModulePanelLogo.png">Images/ThreeDICOM-ModulePanelLogo.png</file>
     <file alias="ModulePanelLogo@2x.png">Images/ThreeDICOM-ModulePanelLogo@2x.png</file>
+    <file alias="Qml/HomeHero.qml">Qml/HomeHero.qml</file>
   </qresource>
 </RCC>
+

@@ -1,4 +1,4 @@
-<!DOCTYPE RCC><RCC version="1.0">
+﻿<!DOCTYPE RCC><RCC version="1.0">
   <qresource>
     <file>Logos/Bills.png</file>
     <file>Logos/BIRN-NoText.png</file>
@@ -6,5 +6,16 @@
     <file>Logos/NAMIC.png</file>
     <file>Logos/NCIGT.png</file>
     <file>Logos/SPL.png</file>
+  </qresource>
+  <qresource prefix="/ThreeDICOM">
+    <file>Qml/Components/T3Theme.qml</file>
+    <file>Qml/Components/T3Button.qml</file>
+    <file>Qml/Components/T3Card.qml</file>
+    <file>Qml/Components/T3QuickActionTile.qml</file>
+    <file>Qml/Components/qmldir</file>
+    <file>Qml/Blocks/HomeQuickActions.qml</file>
+    <file>Qml/Blocks/qmldir</file>
+    <file>Qml/Gallery/HomeQuickActionsDemo.qml</file>
+    <file>Qml/Gallery/qmldir</file>
   </qresource>
 </RCC>

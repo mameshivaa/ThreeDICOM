@@ -1,7 +1,14 @@
-
 project(ThreeDICOMApp)
 
 include(SlicerMacroBuildApplication)
+
+# --------------------------------------------------------------------------
+# Internationalization
+# --------------------------------------------------------------------------
+if(Slicer_BUILD_I18N_SUPPORT)
+  # Enable Japanese and English translations for this application build.
+  set(Slicer_LANGUAGES "ja_JP;en_US" CACHE STRING "Supported application languages" FORCE)
+endif()
 
 # --------------------------------------------------------------------------
 # Properties

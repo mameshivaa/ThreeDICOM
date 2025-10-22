@@ -518,12 +518,40 @@ void qSlicerCoreApplicationPrivate::init()
 
   this->createDirectory(q->extensionsInstallPath(), "extensions"); // Make sure the path exists
 
-  this->ApplicationLocaleName = "en_US";
+  QString defaultLocaleName = QStringLiteral("en_US");
+  const QString mainApplicationName = q->mainApplicationName();
+  const QString mainProjectApplicationName = QString::fromLatin1(Slicer_MAIN_PROJECT_APPLICATION_NAME);
+  const bool preferJapanese =
+    (mainApplicationName.compare(QStringLiteral("ThreeDICOM"), Qt::CaseInsensitive) == 0) ||
+    (mainProjectApplicationName.compare(QStringLiteral("ThreeDICOM"), Qt::CaseInsensitive) == 0);
+  if (preferJapanese)
+  {
+    defaultLocaleName = QStringLiteral("ja_JP");
+  }
+
+  this->ApplicationLocaleName = defaultLocaleName;
   this->ApplicationLocale = QLocale(this->ApplicationLocaleName);
 # ifdef Slicer_BUILD_I18N_SUPPORT
-  if (q->userSettings()->value("Internationalization/Enabled").toBool())
+  QSettings* const i18nSettings = q->userSettings();
+  if (preferJapanese)
   {
-    QString localeName = q->userSettings()->value("language", this->ApplicationLocaleName).toString();
+    if (!i18nSettings->contains("Internationalization/Enabled"))
+    {
+      i18nSettings->setValue("Internationalization/Enabled", true);
+    }
+    if (!i18nSettings->contains("language"))
+    {
+      i18nSettings->setValue("language", this->ApplicationLocaleName);
+    }
+  }
+  if (i18nSettings->value("Internationalization/Enabled", preferJapanese).toBool())
+  {
+    QString localeName = i18nSettings->value("language", this->ApplicationLocaleName).toString();
+    if (localeName.isEmpty() && preferJapanese)
+    {
+      localeName = this->ApplicationLocaleName;
+      i18nSettings->setValue("language", localeName);
+    }
     if (!localeName.isEmpty())
     {
       this->ApplicationLocaleName = localeName;

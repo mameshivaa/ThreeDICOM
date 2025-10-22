@@ -1,0 +1,5 @@
+module Components
+singleton T3Theme 1.0 T3Theme.qml
+T3Button 1.0 T3Button.qml
+T3Card 1.0 T3Card.qml
+T3QuickActionTile 1.0 T3QuickActionTile.qml
