@@ -5,18 +5,19 @@ import "." as Theme
 
 Control {
     id: card
+    width: implicitWidth
 
     property string title: ""
     property string subtitle: ""
     property alias headerContent: headerExtras.data
     property alias footerContent: footerExtras.data
-    default property alias bodyContent: bodySection.data
+    default property alias contentData: bodySection.data
 
     property int cardPadding: Theme.T3Theme.spacingLG
     property int sectionSpacing: Theme.T3Theme.spacingSM
 
-    implicitWidth: Math.max(background.implicitWidth, 320)
-    implicitHeight: contentColumn.implicitHeight + cardPadding * 2
+    implicitWidth: background.implicitWidth
+    implicitHeight: background.implicitHeight
 
     Component.onCompleted: Theme.T3Theme.applyTo(card)
 
@@ -26,7 +27,7 @@ Control {
         color: Theme.T3Theme.card
         border.width: 1
         border.color: Theme.T3Theme.border
-        implicitWidth: 320
+        implicitWidth: contentColumn.implicitWidth + cardPadding * 2
         implicitHeight: Math.max(160, contentColumn.implicitHeight + cardPadding * 2)
     }
 

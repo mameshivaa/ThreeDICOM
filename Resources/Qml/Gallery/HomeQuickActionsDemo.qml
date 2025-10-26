@@ -7,10 +7,12 @@ import Blocks 1.0 as Blocks
 ApplicationWindow {
     id: window
     visible: true
-    width: 1500
-    height: 960
-    minimumWidth: 1366
-    minimumHeight: 900
+    property int horizontalPadding: Components.T3Theme.spacingXL * 2
+    property int verticalPadding: Components.T3Theme.spacingXL * 2
+    width: quickActions.preferredWidth + horizontalPadding
+    height: quickActions.preferredHeight + verticalPadding
+    minimumWidth: quickActions.baseTileWidth + Components.T3Theme.spacingLG * 2 + horizontalPadding
+    minimumHeight: quickActions.preferredHeight + verticalPadding
     title: qsTr("Home Quick Actions Demo")
 
     Material.theme: Material.Light
@@ -21,7 +23,10 @@ ApplicationWindow {
     Component.onCompleted: Components.T3Theme.applyTo(window)
 
     Blocks.HomeQuickActions {
+        id: quickActions
         anchors.centerIn: parent
+        availableWidth: Math.max(baseTileWidth + Components.T3Theme.spacingLG * 2,
+                                 window.width - window.horizontalPadding)
         onActionTriggered: console.log("Action triggered:", actionId)
     }
 }
