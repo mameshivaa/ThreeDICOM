@@ -6,11 +6,13 @@ import "." as Theme
 Button {
     id: control
 
-    readonly property int Primary: 0
-    readonly property int Secondary: 1
-    readonly property int Outline: 2
-    readonly property int Ghost: 3
-    readonly property int Destructive: 4
+    enum Variant {
+        Primary,
+        Secondary,
+        Outline,
+        Ghost,
+        Destructive
+    }
 
     property int variant: Primary
     property bool subtle: false
@@ -23,9 +25,9 @@ Button {
     topPadding: Theme.T3Theme.spacingSM
     bottomPadding: Theme.T3Theme.spacingSM
 
-    font.family = Theme.T3Theme.fontFamilyPrimary
-    font.pixelSize = Theme.T3Theme.fontSizeBody
-    font.weight = Font.DemiBold
+    font.family: Theme.T3Theme.fontFamilyPrimary
+    font.pixelSize: Theme.T3Theme.fontSizeBody
+    font.weight: Font.DemiBold
 
     Material.theme: Material.Light
     Material.accent: Theme.T3Theme.accent
@@ -39,14 +41,14 @@ Button {
         border.width: variant === Outline ? 2 : 0
         color: {
             switch (variant) {
-            case control.Primary:
+            case Primary:
                 return Theme.T3Theme.accent
-            case control.Secondary:
+            case Secondary:
                 return Theme.T3Theme.muted
-            case control.Outline:
-            case control.Ghost:
+            case Outline:
+            case Ghost:
                 return "transparent"
-            case control.Destructive:
+            case Destructive:
                 return Theme.T3Theme.destructive
             default:
                 return Theme.T3Theme.accent
@@ -54,9 +56,9 @@ Button {
         }
         border.color: {
             switch (variant) {
-            case control.Outline:
+            case Outline:
                 return Theme.T3Theme.foreground
-            case control.Ghost:
+            case Ghost:
                 return "transparent"
             default:
                 return Qt.darker(color, 1.15)
@@ -84,9 +86,6 @@ Button {
                     width: 24
                     height: 24
                     fillMode: Image.PreserveAspectFit
-                    color: control.variant === control.Primary || control.variant === control.Destructive
-                           ? Theme.T3Theme.accentForeground
-                           : Theme.T3Theme.foreground
                 }
             }
         }
@@ -95,9 +94,9 @@ Button {
             text: control.text
             visible: text.length > 0
             font: control.font
-            color: control.variant === control.Primary || control.variant === control.Destructive
+            color: control.variant === Primary || control.variant === Destructive
                    ? Theme.T3Theme.accentForeground
-                   : (control.variant === control.Outline || control.variant === control.Ghost
+                   : (control.variant === Outline || control.variant === Ghost
                       ? Theme.T3Theme.foreground
                       : Theme.T3Theme.foreground)
             horizontalAlignment: Text.AlignHCenter
